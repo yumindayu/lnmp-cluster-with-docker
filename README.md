@@ -1,5 +1,5 @@
 # lnmp-cluster-with-docker
-docker一键部署php/mysql/nginx高可用集群
+docker一键部署php/mysql/nginx高可用集群，5个mysql节点，两个haproxy节点做负载均衡和双机热备，3个php节点，3个nginx节点，另外2个nginx节点做负载均衡和双机热备
 
 
 1.修改docker-compose.yml里的XTRABACKUP_PASSWORD 和 MYSQL_ROOT_PASSWORD 为你的数据库密码
@@ -36,3 +36,6 @@ docker一键部署php/mysql/nginx高可用集群
 8.宿主机/www/wwwroot/web/www目录创建info.php
 
 9.curl http://172.18.0.189:6102/info.php 就可以看到了
+
+# @todo
+自己动手把redis集群加进去
