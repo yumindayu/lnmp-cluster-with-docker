@@ -21,12 +21,14 @@ docker一键部署php/mysql/nginx高可用集群，5个mysql节点，两个hapro
      flush privileges;
 
 6.因为mysql采用pxc集群，用haproxy做负载均衡，同时双节点的haproxy实现双机热备，这里我们需要手动启动keepalived
+
      docker exec -it haproxy1 bash
      service keepalived start
      
      docker exec -it haproxy2 bash
      service keepalived start
 7.nginx通过keepalived同样实现双机热备，也需要手动启动keepalived
+
      docker exec -it balance1 bash
      service keepalived start
      
