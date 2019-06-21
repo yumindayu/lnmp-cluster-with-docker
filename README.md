@@ -7,13 +7,17 @@ docker一键部署php/mysql/nginx高可用集群，5个mysql节点，两个hapro
 2.docker-compose.yml文件的ip地址可根据自己宿主机的docker环境进行设置和更改，本说明中以docker-compose.yml源文件里的ip地址举例
 
 3.宿主机执行
+      
       mkdir -p /www/wwwroot/web/www 
      
   /www/wwwroot/web/www为项目代码目录，也可以通过更改docker-compose.yml里的volumes进行自定义
 
-4.执行docker-compose up
+4.执行
+
+      docker-compose up
 
 5.docker容器全部启动后进入随便一个db容器，创建name为haproxy的user，举例说明
+
      docker exec -it db1 bash
      mysql -uroot -p -h127.0.0.1
      
