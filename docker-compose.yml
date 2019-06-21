@@ -1,0 +1,230 @@
+version : "3"
+services:
+  db1:
+    container_name: db1
+    image: yumin5723/pxc 
+    privileged: true
+    networks:
+      - appnet
+    environment:
+      - "CLUSTER_NAME=LWLPXC"
+      - "XTRABACKUP_PASSWORD=xxxxxxxxxxx"
+      - "MYSQL_ROOT_PASSWORD=xxxxxxxxxxx"
+    ports:
+      - "6001:3306"
+    volumes:
+      - mysql-data-db1:/var/lib/mysql
+      - mysql-data-backup:/data
+    command: >
+      /bin/bash -c "
+        sleep 60;
+      "
+  db2:
+    container_name: db2
+    image: yumin5723/pxc
+    privileged: true
+    networks:
+      - appnet
+    environment:
+      - "CLUSTER_NAME=LWLPXC"
+      - "XTRABACKUP_PASSWORD=xxxxxxxxxxx"
+      - "MYSQL_ROOT_PASSWORD=xxxxxxxxxxx"
+      - "CLUSTER_JOIN=db1"
+    ports:
+      - "6002:3306"
+    volumes:
+      - mysql-data-db2:/var/lib/mysql
+      - mysql-data-backup:/data
+    depends_on:
+      - db1
+  db3:
+    container_name: db3
+    image: yumin5723/pxc
+    privileged: true
+    networks:
+      - appnet
+    environment:
+      - "CLUSTER_NAME=LWLPXC"
+      - "XTRABACKUP_PASSWORD=xxxxxxxxxxx"
+      - "MYSQL_ROOT_PASSWORD=xxxxxxxxxxx"
+      - "CLUSTER_JOIN=db1"
+    ports:
+      - "6003:3306"
+    volumes:
+      - mysql-data-db3:/var/lib/mysql
+      - mysql-data-backup:/data
+    depends_on:
+      - db1
+  db4:
+    container_name: db4
+    image: yumin5723/pxc
+    privileged: true
+    networks:
+      - appnet
+    environment:
+      - "CLUSTER_NAME=LWLPXC"
+      - "XTRABACKUP_PASSWORD=xxxxxxxxxxx"
+      - "MYSQL_ROOT_PASSWORD=xxxxxxxxxxx"
+      - "CLUSTER_JOIN=db1"
+    ports:
+      - "6004:3306"
+    volumes:
+      - mysql-data-db4:/var/lib/mysql
+      - mysql-data-backup:/data
+    depends_on:
+      - db1
+  db5:
+    container_name: db5 
+    image: yumin5723/pxc
+    privileged: true
+    networks:
+      - appnet 
+    environment:
+      - "CLUSTER_NAME=LWLPXC"
+      - "XTRABACKUP_PASSWORD=xxxxxxxxxxx"
+      - "MYSQL_ROOT_PASSWORD=xxxxxxxxxxx"
+      - "CLUSTER_JOIN=db1"
+    ports:
+      - "6005:3306"
+    volumes:
+      - mysql-data-db5:/var/lib/mysql
+      - mysql-data-backup:/data
+    depends_on:
+      - db1
+  haproxy1:
+    container_name: haproxy1
+    privileged: true
+    image: yumin5723/haproxy:latest
+    ports:
+      - 7001:8888
+      - 7002:3306
+    volumes:
+      - ./haproxy/compose:/usr/local/etc/haproxy
+      - ./haproxy/h1/keepalived.conf:/etc/keepalived/keepalived.conf
+    networks:
+      appnet:
+        ipv4_address: 172.18.0.21
+    depends_on:
+      - db1
+      - db2
+      - db3
+      - db4
+      - db5
+  haproxy2:
+    container_name: haproxy2
+    privileged: true
+    image: yumin5723/haproxy:latest
+    ports:
+      - 7003:8888
+      - 7004:3306
+    volumes:
+      - ./haproxy/compose:/usr/local/etc/haproxy
+      - ./haproxy/h2/keepalived.conf:/etc/keepalived/keepalived.conf
+    networks:
+      appnet:
+        ipv4_address: 172.18.0.22
+    depends_on:
+      - db1
+      - db2
+      - db3
+      - db4
+      - db5
+  php1:
+    container_name: php1
+    privileged: true
+    image: yumin5723/php:latest
+    volumes:
+      - /www/wwwroot/web:/app
+    networks:
+      - appnet
+  php2:
+    container_name: php2
+    privileged: true
+    image: yumin5723/php:latest
+    volumes:
+      - /www/wwwroot/web:/app
+    networks:
+      - appnet
+  php3:
+    container_name: php3
+    privileged: true
+    image: yumin5723/php:latest
+    volumes:
+      - /www/wwwroot/web:/app
+    networks:
+      - appnet
+  nginx1:
+    container_name: nginx1
+    privileged: true
+    image: yumin5723/nginx:latest
+    volumes:
+      - /www/wwwroot/web/:/app
+      - ./wnginx/n1/n1.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - appnet
+    depends_on:
+      - php1
+  nginx2:
+    container_name: nginx2
+    privileged: true
+    image: yumin5723/nginx:latest
+    volumes:
+      - /www/wwwroot/web/:/app
+      - ./wnginx/n2/n2.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - appnet
+    depends_on:
+      - php2
+  nginx3:
+    container_name: nginx3
+    privileged: true
+    image: yumin5723/nginx:latest
+    volumes:
+      - /www/wwwroot/web/:/app
+      - ./wnginx/n3/n3.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - appnet
+    depends_on:
+      - php3
+  balance1:
+    container_name: balance1
+    privileged: true
+    image: yumin5723/nginx:latest
+    volumes:
+      - ./wnginx/lb1/keepalived.conf:/etc/keepalived/keepalived.conf
+      - ./wnginx/lb1/lb1.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      appnet:
+        ipv4_address: 172.18.0.41
+    depends_on:
+      - nginx1
+      - nginx2
+      - nginx3
+  balance2:
+    container_name: balance2
+    privileged: true
+    image: yumin5723/nginx:latest
+    volumes:
+      - ./wnginx/lb2/keepalived.conf:/etc/keepalived/keepalived.conf
+      - ./wnginx/lb2/lb2.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      appnet:
+        ipv4_address: 172.18.0.42
+    depends_on:
+      - nginx1
+      - nginx2
+      - nginx3
+networks:
+  appnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet:  172.18.0.1/16
+volumes:
+  mysql-data-db1:
+  mysql-data-db2:
+  mysql-data-db3:
+  mysql-data-db4:
+  mysql-data-db5:
+  mysql-data-backup:

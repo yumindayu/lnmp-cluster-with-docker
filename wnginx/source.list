@@ -1,0 +1,7 @@
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted 
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed universe multiverse
+
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted
+
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed universe multiverse
