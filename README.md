@@ -87,3 +87,4 @@ docker一键部署php/mysql/nginx高可用集群，5个mysql节点，两个hapro
       /usr/redis/src/redis-cli -c 
       
       get myname
+   (上述命令里的-c一定要加上，集群模式)
