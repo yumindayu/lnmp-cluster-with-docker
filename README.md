@@ -1,5 +1,5 @@
 # lnmp-cluster-with-docker
-docker一键部署php/mysql/nginx高可用集群，5个mysql节点，两个haproxy节点做负载均衡和双机热备，3个php节点，3个nginx节点，另外2个nginx节点做负载均衡和双机热备，3个redis节点，每个节点分一主一从，一共6个redis容器
+docker一键部署php/mysql/nginx/redis高可用集群，5个mysql节点，两个haproxy节点做负载均衡和双机热备，3个php节点，3个nginx节点，另外2个nginx节点做负载均衡和双机热备，3个redis节点，每个节点分一主一从，一共6个redis容器
 
 
 1.修改docker-compose.yml里的XTRABACKUP_PASSWORD 和 MYSQL_ROOT_PASSWORD 为你的数据库密码
